@@ -1,0 +1,4 @@
+name: PVP-Minigame
+version: '${project.version}'
+main: com.tqqn.pvpminigame.PVPMinigame
+api-version: 1.20
