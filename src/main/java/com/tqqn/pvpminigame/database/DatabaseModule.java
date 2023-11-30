@@ -89,12 +89,7 @@ public class DatabaseModule extends AbstractModule {
     }
 
     public void loadGamePlayer(UUID uuid) {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-        CompletableFuture.runAsync(() -> {
-           boolean finished = GamePlayer.addToCache(uuid, pluginConfig.getGamePlayerFromConfig(uuid));
-           future.complete(finished);
-        });
-        System.out.println("loaded");
+        GamePlayer.addToCache(uuid, pluginConfig.getGamePlayerFromConfig(uuid));
     }
 
     public void unLoadGamePlayer(Player player) {

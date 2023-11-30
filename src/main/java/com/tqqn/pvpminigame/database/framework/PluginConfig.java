@@ -21,16 +21,16 @@ public class PluginConfig {
 
     public void addNewPlayerTemplate(UUID uuid, String name) {
         playerConfig.createSection(uuid.toString());
-        saveValueToConfig(getPlayerPath(uuid) + ".uuid", uuid.toString());
-        saveValueToConfig(getPlayerPath(uuid) + ".name", name);
-        saveValueToConfig(getPlayerPath(uuid) + ".1v1.kills", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".1v1.deaths", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".1v1.wins", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".2v2.kills", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".2v2.deaths", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".buildffa.kills", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".buildffa.deaths", 0);
-        saveValueToConfig(getPlayerPath(uuid) + ".buildffa.highest-killstreak", 0);
+        saveValueToConfig(uuid.toString(), uuid.toString());
+        saveValueToConfig(uuid + ".name", name);
+        saveValueToConfig(uuid + ".1v1.kills", 0);
+        saveValueToConfig(uuid + ".1v1.deaths", 0);
+        saveValueToConfig(uuid + ".1v1.wins", 0);
+        saveValueToConfig(uuid + ".2v2.kills", 0);
+        saveValueToConfig(uuid + ".2v2.deaths", 0);
+        saveValueToConfig(uuid + ".buildffa.kills", 0);
+        saveValueToConfig(uuid + ".buildffa.deaths", 0);
+        saveValueToConfig(uuid + ".buildffa.highest-killstreak", 0);
         databaseModule.savePlayerConfig(playerConfig);
     }
 
@@ -41,32 +41,31 @@ public class PluginConfig {
     public GamePlayer getGamePlayerFromConfig(UUID uuid) {
         System.out.println("debug1");
         return new GamePlayer(
-                UUID.fromString(playerConfig.getString(uuid + ".uuid")),
-                playerConfig.getString(getPlayerPath(uuid) + ".name"), getPlayerStatsFromConfig(uuid));
+                uuid, playerConfig.getString(uuid + ".name"), getPlayerStatsFromConfig(uuid));
     }
 
     public void saveGamePlayerToConfig(GamePlayer gamePlayer) {
-        playerConfig.set(getPlayerPath(gamePlayer.getUUID()), gamePlayer.getUUID());
-        playerConfig.set(getPlayerPath(gamePlayer.getUUID()) + ".name", gamePlayer.getName());
+        playerConfig.set(gamePlayer.getUUID().toString(), gamePlayer.getUUID());
+        playerConfig.set(gamePlayer.getUUID().toString() + ".name", gamePlayer.getName());
         databaseModule.savePlayerConfig(playerConfig);
     }
 
     public PlayerStats getPlayerStatsFromConfig(UUID uuid) {
         return new PlayerStats(
-                playerConfig.getInt(getPlayerPath(uuid) + ".1v1.kills"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".1v1.deaths"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".1v1.wins"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".2v2.kills"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".2v2.deaths"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".2v2.wins"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".buildffa.kills"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".buildffa.deaths"),
-                playerConfig.getInt(getPlayerPath(uuid) + ".buildffa.highest-killstreak")
+                playerConfig.getInt(uuid + ".1v1.kills"),
+                playerConfig.getInt(uuid + ".1v1.deaths"),
+                playerConfig.getInt(uuid + ".1v1.wins"),
+                playerConfig.getInt(uuid + ".2v2.kills"),
+                playerConfig.getInt(uuid + ".2v2.deaths"),
+                playerConfig.getInt(uuid + ".2v2.wins"),
+                playerConfig.getInt(uuid + ".buildffa.kills"),
+                playerConfig.getInt(uuid + ".buildffa.deaths"),
+                playerConfig.getInt(uuid + ".buildffa.highest-killstreak")
         );
     }
 
     public void savePlayerStats(GamePlayer gamePlayer) {
-        playerConfig.set(getPlayerPath(gamePlayer.getUUID()), gamePlayer.getUUID());
+        playerConfig.set(gamePlayer.getUUID().toString(), gamePlayer.getUUID());
         saveValueToConfig(gamePlayer.getUUID() + ".1v1.kills", gamePlayer.getPlayerStats().getStat(PlayerStats.StatType.ONE_V_ONE_KILLS));
         saveValueToConfig(gamePlayer.getUUID() + ".1v1.deaths", gamePlayer.getPlayerStats().getStat(PlayerStats.StatType.ONE_V_ONE_DEATHS));
         saveValueToConfig(gamePlayer.getUUID() + ".1v1.wins", gamePlayer.getPlayerStats().getStat(PlayerStats.StatType.ONE_V_ONE_WINS));
@@ -78,10 +77,6 @@ public class PluginConfig {
         saveValueToConfig(gamePlayer.getUUID() + ".buildffa.highest-killstreak", gamePlayer.getPlayerStats().getStat(PlayerStats.StatType.BUILDFFA_HIGHEST_STREAK));
 
         databaseModule.savePlayerConfig(playerConfig);
-    }
-
-    public String getPlayerPath(UUID uuid) {
-        return uuid + ".uuid";
     }
 
     public String getGame() {
