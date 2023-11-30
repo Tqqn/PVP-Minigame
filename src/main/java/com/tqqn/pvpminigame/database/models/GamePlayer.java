@@ -14,18 +14,15 @@ public class GamePlayer {
 
     private final UUID uuid;
     private final String name;
+    private final PlayerStats playerStats;
 
-    public GamePlayer(UUID uuid, String name) {
+    public GamePlayer(UUID uuid, String name, PlayerStats playerStats) {
         this.uuid = uuid;
         this.name = name;
-    }
-
-    public CompletableFuture<Void> save() {
-
+        this.playerStats = playerStats;
     }
 
     public static GamePlayer from(Player player) {
-        if (player == null) return null;
         return CACHE.get(player.getUniqueId());
     }
 
@@ -33,8 +30,10 @@ public class GamePlayer {
         CACHE.remove(player.getUniqueId());
     }
 
-    public static void addToCache(UUID uuid, GamePlayer gamePlayer) {
+    public static boolean addToCache(UUID uuid, GamePlayer gamePlayer) {
         CACHE.put(uuid, gamePlayer);
+        System.out.println("loaded2");
+        return true;
     }
 
     public UUID getUUID() {
@@ -43,5 +42,9 @@ public class GamePlayer {
 
     public String getName() {
         return name;
+    }
+
+    public PlayerStats getPlayerStats() {
+        return playerStats;
     }
 }

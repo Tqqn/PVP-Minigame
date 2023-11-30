@@ -1,6 +1,9 @@
 package com.tqqn.pvpminigame.database;
 
 import com.tqqn.pvpminigame.PVPMinigame;
+import com.tqqn.pvpminigame.database.framework.PluginConfig;
+import com.tqqn.pvpminigame.database.listeners.PlayerJoinListener;
+import com.tqqn.pvpminigame.database.listeners.PlayerQuitListener;
 import com.tqqn.pvpminigame.database.models.GamePlayer;
 import com.tqqn.pvpminigame.utils.AbstractModule;
 import org.bukkit.Bukkit;
@@ -22,8 +25,10 @@ public class DatabaseModule extends AbstractModule {
     private final ArrayList<BukkitRunnable> runnables = new ArrayList<>();
     private File playerConfigFile;
     private FileConfiguration playerConfig;
+    private static PluginConfig pluginConfig;
 
     public DatabaseModule(PVPMinigame plugin) {
+        super(plugin);
         this.plugin = plugin;
     }
 
@@ -31,6 +36,11 @@ public class DatabaseModule extends AbstractModule {
     public void onEnable() {
         plugin.saveDefaultConfig();
         createCustomConfig();
+
+        pluginConfig = new PluginConfig(this);
+
+        registerEvent(new PlayerJoinListener(this));
+        registerEvent(new PlayerQuitListener());
     }
 
     @Override
@@ -45,13 +55,14 @@ public class DatabaseModule extends AbstractModule {
     }
 
     private void createCustomConfig() {
-        playerConfigFile = new File(plugin.getDataFolder(), "custom.yml");
+        playerConfigFile = new File(plugin.getDataFolder(), "players.yml");
         if (!playerConfigFile.exists()) {
             playerConfigFile.getParentFile().mkdirs();
             plugin.saveResource("players.yml", false);
         }
 
         playerConfig = new YamlConfiguration();
+
         try {
             playerConfig.load(playerConfigFile);
         } catch (IOException | InvalidConfigurationException e) {
@@ -73,13 +84,17 @@ public class DatabaseModule extends AbstractModule {
         } catch (IOException ignored) { }
     }
 
-    public static void savePlayer(GamePlayer gamePlayer) {
-        CompletableFuture.runAsync(gamePlayer::save);
+    public static CompletableFuture savePlayer(GamePlayer gamePlayer) {
+        return CompletableFuture.runAsync(() -> pluginConfig.saveGamePlayerToConfig(gamePlayer));
     }
 
-    public void loadGamePlayer(UUID uuid, Player player) {
-        CompletableFuture.runAsync()
-        GamePlayer.addToCache(uuid, new GamePlayer(uuid, player.getName()));
+    public void loadGamePlayer(UUID uuid) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        CompletableFuture.runAsync(() -> {
+           boolean finished = GamePlayer.addToCache(uuid, pluginConfig.getGamePlayerFromConfig(uuid));
+           future.complete(finished);
+        });
+        System.out.println("loaded");
     }
 
     public void unLoadGamePlayer(Player player) {
@@ -87,4 +102,7 @@ public class DatabaseModule extends AbstractModule {
         GamePlayer.removeFromCache(player);
     }
 
+    public PluginConfig getPluginConfig() {
+        return pluginConfig;
+    }
 }
