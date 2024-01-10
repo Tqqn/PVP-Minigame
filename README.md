@@ -1,8 +1,9 @@
-# ARCHIVED/NOT WORKED ON - Plugin - PVP-Minigame (Could be used for a lobby?)
+# ARCHIVED/NOT BEING WORKED ON - Plugin - PVP-Minigame (Could be used for a lobby?)
 MC-Version: 1.20.2
 ## Description:
 - This plugin is a PVP-Minigame plugin where you have several kitpvp/duels features.
   Such as 1v1's, 2v2's, KitPVP and with that different duel modes (OP-PVP, PotionPVP etc.)
+- With this plugin I tried something new for me, working with modules/frameworks, better code structure.
 
 ## Commands:
 ### Admin Commands:
